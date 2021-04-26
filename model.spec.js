@@ -13,3 +13,28 @@ test('model structure', () => {
         update: expect.any(Function)
     }))
 })
+
+describe('record', () => {
+    const heroes = [{
+        name: 'Batman'}, {
+        name: 'Black Panther'
+    }]
+
+    test('can add data to the collection', () => {
+        const model = new Model()
+
+        model.record(heroes)
+        expect(model.$collection).toEqual(heroes)
+    })
+
+    test('gets called when data is passed to Model', () => {
+        const spy = jest.spyOn(Model.prototype, 'record')
+        const model = new Model(heroes)
+
+        expect(spy).toHaveBeenCalled()
+
+        expect(model.$collection).toEqual(heroes)
+
+        spy.mockRestore()
+    })
+})
