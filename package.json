@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test-watch": "jest --watchAll"
+    "test": "jest --verbose",
+    "test-watch": "jest --watchAll --verbose"
   },
   "jest": {
     "transform": {

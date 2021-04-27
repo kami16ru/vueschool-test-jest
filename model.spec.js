@@ -1,17 +1,37 @@
 import Model from './model'
 
+function createModel(data = [], options = {}) {
+    return new Model({
+        ...options,
+        data
+    })
+}
+
 test('new works', () => {
-    expect(new Model).toBeInstanceOf(Model)
+    expect(createModel()).toBeInstanceOf(Model)
 })
 
 test('model structure', () => {
-    expect(new Model).toEqual(expect.objectContaining({
+    expect(createModel()).toEqual(expect.objectContaining({
         $collection: expect.any(Array),
+        $options: expect.objectContaining({
+           primaryKey: 'id'
+        }),
         record: expect.any(Function),
         all: expect.any(Function),
         find: expect.any(Function),
         update: expect.any(Function)
     }))
+})
+
+describe('customizations', () => {
+    test('we can customize the primaryKey', () => {
+        const model = createModel([],{
+            primaryKey: 'name'
+        })
+
+        expect(model.$options.primaryKey).toBe('name')
+    })
 })
 
 describe('record', () => {
@@ -22,7 +42,7 @@ describe('record', () => {
     }]
 
     test('can add data to the collection', () => {
-        const model = new Model()
+        const model = createModel()
 
         model.record(heroes)
         expect(model.$collection).toEqual([
@@ -36,7 +56,7 @@ describe('record', () => {
 
     test('gets called when data is passed to Model', () => {
         const spy = jest.spyOn(Model.prototype, 'record')
-        const model = new Model(heroes)
+        const model = createModel(heroes)
 
         expect(spy).toHaveBeenCalled()
 
@@ -48,13 +68,13 @@ describe('record', () => {
 
 describe('all', () => {
     test('returns empty model', () => {
-        const model = new Model()
+        const model = createModel()
 
         expect(model.all()).toEqual([])
     })
 
     test('returns model data', () => {
-        const model = new Model([{
+        const model = createModel([{
             name: 'Batman'}, {
             name: 'Joker'
         }])
@@ -63,7 +83,7 @@ describe('all', () => {
     })
 
     test('original data stays intact', () => {
-        const model = new Model([{ name: 'Batman' }])
+        const model = createModel([{ name: 'Batman' }])
         const data = model.all()
 
         data[0].name = 'Joker'
@@ -81,13 +101,13 @@ describe('find', () => {
     }]
 
     test('returns null if nothing matches', () => {
-        const model = new Model()
+        const model = createModel()
 
         expect(model.find(heroes[0].id)).toEqual(null)
     })
 
     test('find returns a matching entry', () => {
-        const model = new Model(heroes)
+        const model = createModel(heroes)
 
         expect(model.find(heroes[0].id)).toEqual(heroes[0])
     })
@@ -100,7 +120,7 @@ describe('update', () => {
     beforeEach(() => {
         const dataset = JSON.parse(JSON.stringify(heroesAndVillains))
 
-        model = new Model(dataset)
+        model = createModel(dataset)
     })
 
     test('an entry by id', () => {
