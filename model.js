@@ -19,10 +19,21 @@ export default class Model {
     all() {
         return this.$collection.map(entry => Object.assign({}, entry))
     }
-    update() {}
-    find(value) {
+    update(key, data) {
         const primaryKey = 'id'
-        const entry = this.$collection.find(entry => entry[primaryKey] === value)
+        const entryIndex = this.$collection.findIndex(entry => entry[primaryKey] === key)
+
+        if (entryIndex < 0) return false
+
+        this.$collection.splice(
+            entryIndex,
+            1,
+            Object.assign(this.$collection[entryIndex], data)
+        )
+    }
+    find(key) {
+        const primaryKey = 'id'
+        const entry = this.$collection.find(entry => entry[primaryKey] === key)
 
         return entry ? Object.assign({}, entry) : null
     }
